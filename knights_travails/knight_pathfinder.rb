@@ -1,8 +1,10 @@
 require_relative 'polytree_node'
 require 'byebug'
+
+
 class KnightPathFinder
+  attr_reader :start_pos, :visited_positions
   MOVES = [[2,1],[2,-1],[1,2],[1,-2],[-1,2],[-1,-2],[-2,1],[-2,-1]]
-  attr_reader :visited_positions, :start_pos
 
   def initialize(start_pos)
     @start_pos = start_pos
@@ -30,9 +32,10 @@ class KnightPathFinder
     new_positions
   end
 
-
   def build_move_tree
-    queue = [PolyTreeNode.new(start_pos)]
+    root = PolyTreeNode.new(start_pos)
+    @move_tree = root
+    queue = [root]
     until queue.empty?
       el = queue.shift
       new_move_positions(el.value).each do |pos|
@@ -47,7 +50,19 @@ class KnightPathFinder
     queue
   end
 
-  
+  def find_path(end_pos)
+    node = @move_tree.dfs(end_pos)
+    trace_path_back(node)
+  end
 
+private
 
+  def trace_path_back(node)
+    trace_back_path = []
+    until node == nil
+      trace_back_path << node.value
+      node = node.parent
+    end
+    trace_back_path
+  end
 end
